@@ -8,19 +8,20 @@ class MRParentalEducationPerformance(MRJob):
         if isinstance(line, bytes):
             line = line.decode('utf-8')
 
-        if line.startswith("school;sex;age"):
+        # Skip header line
+        if line.startswith("school,sex,age,address,famsize,Pstatus,Medu,Fedu,Mjob,Fjob,reason,guardian,traveltime,studytime,failures,schoolsup,famsup,paid,activities,nursery,higher,internet,romantic,famrel,freetime,goout,Dalc,Walc,health,absences,G1,G2,G3"):
             return  # skip header
 
         try:
-            row = next(csv.reader([line], delimiter=';'))
+            row = next(csv.reader([line], delimiter=','))  # Default CSV delimiter is comma
 
             # Ensure row has enough columns
-            if len(row) < 28:
+            if len(row) < 33:
                 return
 
-            fedu = int(row[12])   # Father's education
-            medu = int(row[11])   # Mother's education
-            avg_grade = (int(row[25]) + int(row[26]) + int(row[27])) / 3
+            fedu = int(row[7])   # Father's education (adjusted column index)
+            medu = int(row[6])   # Mother's education (adjusted column index)
+            avg_grade = (int(row[30]) + int(row[31]) + int(row[32])) / 3  # G1, G2, G3 grades
             key = (medu, fedu)
             yield key, avg_grade
         except Exception as e:
