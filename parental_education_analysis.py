@@ -15,8 +15,9 @@ class MRParentalEducationPerformance(MRJob):
             avg_grade = (int(row[25]) + int(row[26]) + int(row[27])) / 3
             key = (medu, fedu)
             yield key, avg_grade
-        except Exception:
-            pass  # skip malformed lines
+        except Exception as e:
+            print("Error parsing line:", line)
+            print("Exception:", e)
 
     def reducer(self, key, values):
         values = list(values)
